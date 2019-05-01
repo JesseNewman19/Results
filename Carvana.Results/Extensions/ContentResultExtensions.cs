@@ -12,7 +12,14 @@ namespace Carvana
         {
             return result.Status.Equals(ResultStatus.MissingResource);
         }
-
+        
+        public static async Task<Result> WithoutContent<T>(this Task<Result<T>> task) => await WithNoContent(task);
+        public static async Task<Result> WithNoContent<T>(this Task<Result<T>> task)
+        {
+            var result = await task;
+            return WithNoContent(result);
+        } 
+        
         public static Result WithoutContent<TResult>(this Result<TResult> result) => WithNoContent(result);
         public static Result WithNoContent<TResult>(this Result<TResult> result)
         {
@@ -20,7 +27,7 @@ namespace Carvana
                 ? Result.Success()
                 : Result.Errored(result.Status, result.ErrorMessage);
         }
-
+        
         public static T OrDefault<T>(this Result<T> input, T defaultValue)
         {
             return input.Failed()

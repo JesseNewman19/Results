@@ -49,9 +49,9 @@ namespace Carvana
         public override string ToString() => $"{Status}: {ErrorMessage}";
 
         public static Result Success() => new Result<string>("No Content");
-        public static Result Errored(ResultStatus status, string errorMessage) => new Result<string>(status, errorMessage, "No Content");
-        public static Result InvalidRequest(string errorMessage) => new Result<string>(ResultStatus.InvalidRequest, errorMessage, "No Content");
-        public static Result MissingResource(string errorMessage) => new Result<string>(ResultStatus.MissingResource, errorMessage, "No Content");
+        public static Result Errored(ResultStatus status, string errorMessage) => new Result<string>(status, errorMessage, default(string));
+        public static Result InvalidRequest(string errorMessage) => new Result<string>(ResultStatus.InvalidRequest, errorMessage, default(string));
+        public static Result MissingResource(string errorMessage) => new Result<string>(ResultStatus.MissingResource, errorMessage, default(string));
         public static Result<T> Success<T>(T content) => new Result<T>(content);
         public static Result<T> Errored<T>(ResultStatus status, string errorMessage) => new Result<T>(status, errorMessage);
     }

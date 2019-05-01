@@ -13,7 +13,7 @@ namespace Carvana
                 onSuccess();
             return result;
         }
-
+        
         public static Result<T> OnSuccess<T>(this Result<T> result, Action<T> onSuccess)
         {
             if (result.Succeeded())
@@ -59,6 +59,16 @@ namespace Carvana
             return result;
         }
 
+        public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Func<T, Task<Result>> onSuccess)
+        {
+            var r = await asyncResult;
+            if (r.Failed())
+                return r;
+            
+            var secondResult = await onSuccess(r.Content);
+            return secondResult.Succeeded() ? r : secondResult.AsTypedError<T>();
+        }
+        
         public static Result<TOutput> Then<TOutput>(this Result input, Func<TOutput> getOutput)
         {
             return input.Succeeded()
