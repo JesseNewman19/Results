@@ -1,4 +1,4 @@
-# Results &middot; [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://help.github.com/articles/creating-a-pull-request/) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) 
+# Results &middot; [![Build Status](https://carvanadev.visualstudio.com/Carvana.OpenSource/_apis/build/status/Carvana.Results?branchName=master)](https://carvanadev.visualstudio.com/Carvana.OpenSource/_build/latest?definitionId=7188&branchName=master) [![NuGet Package](https://img.shields.io/nuget/vpre/carvana.results.svg)](https://www.nuget.org/packages/Carvana.Results/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://help.github.com/articles/creating-a-pull-request/) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) 
 
 Carvana Results provides a standarized approach to Service-To-Service messaging, with an emphasis on explicit communication of Error details.
 
