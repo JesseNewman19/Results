@@ -13,13 +13,31 @@ namespace Carvana
                 onSuccess();
             return result;
         }
-        
+
         public static Result<T> OnSuccess<T>(this Result<T> result, Action<T> onSuccess)
         {
             if (result.Succeeded())
                 onSuccess(result.Content);
             return result;
         }
+        
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
+        // public static async Task<Result> OnSuccess(this Task<Result> asyncResult, Action onSuccess)
+        
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
+        // public static async Task<Result> OnSuccess(this Task<Result> asyncResult, Action<Result> onSuccess)
+
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */ 
+        // public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action onSuccess)
+
+        /* Do NOT make an extension method with this signature. It causes massive ambiguity with tasks. */
+        // public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action<T> onSuccess)
+        
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
+        // public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action<Result> onSuccess)
+        
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
+        // public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action<Result<T>> onSuccess)
 
         public static async Task<Result<T>> OnSuccess<T>(this Result<T> result, Func<Task> onSuccessAsync)
         {
@@ -34,21 +52,40 @@ namespace Carvana
                 await onSuccessAsync(result.Content);
             return result;
         }
-
-        public static async Task<Result> OnSuccess(this Task<Result> asyncResult, Action onSuccess)
+        
+        public static async Task<Result> OnSuccess(this Result result, Func<Task<Result>> onSuccessAsync)
         {
-            var result = await asyncResult;
-            if (result.Succeeded())
-                onSuccess();
-            return result;
+            if (result.Failed())
+                return result;
+            
+            Result onSuccessResult = await onSuccessAsync();
+            return onSuccessResult.Succeeded()
+                ? result
+                : onSuccessResult;
         }
 
-        public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action<T> onSuccess)
+        public static async Task<Result> OnSuccess(this Task<Result> asyncResult, Func<Task<Result>> onSuccessAsync)
+        {
+            Result result = await asyncResult;
+            if (result.Failed())
+                return result;
+            
+            Result onSuccessResult = await onSuccessAsync();
+            return onSuccessResult.Succeeded()
+                ? result
+                : onSuccessResult;
+        }
+        
+        public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Func<T, Task<Result>> onSuccessAsync)
         {
             Result<T> result = await asyncResult;
-            if (result.Succeeded())
-                onSuccess(result.Content);
-            return result;
+            if (result.Failed())
+                return result;
+            
+            Result onSuccessResult = await onSuccessAsync(result.Content);
+            return onSuccessResult.Succeeded()
+                ? result
+                : onSuccessResult.AsTypedError<T>();
         }
 
         public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Func<T, Task> onSuccessAsync)
@@ -59,16 +96,6 @@ namespace Carvana
             return result;
         }
 
-        public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Func<T, Task<Result>> onSuccess)
-        {
-            var r = await asyncResult;
-            if (r.Failed())
-                return r;
-            
-            var secondResult = await onSuccess(r.Content);
-            return secondResult.Succeeded() ? r : secondResult.AsTypedError<T>();
-        }
-        
         public static Result<TOutput> Then<TOutput>(this Result input, Func<TOutput> getOutput)
         {
             return input.Succeeded()

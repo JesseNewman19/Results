@@ -49,35 +49,29 @@ namespace Carvana
             return result;
         }
 
-        public static async Task<Result> OnFailure(this Task<Result> asyncResult, Action onFailure)
-        {
-            Result result = await asyncResult;
-            if (result.Failed())
-                onFailure();
-            return result;
-        }
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
+        // public static async Task<Result> OnFailure(this Task<Result> asyncResult, Action onFailure)
+        
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
+        // public static async Task<Result> OnFailure(this Task<Result> asyncResult, Action<Result> onFailure)
 
-        public static async Task<Result> OnFailure(this Task<Result> resultTask, Action<Result> onFailure)
-        {
-            Result result = await resultTask;
-            if (result.Failed())
-                onFailure(result);
-            return result;
-        }
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */ 
+        // public static async Task<Result<T>> OnFailure<T>(this Task<Result<T>> asyncResult, Action onFailure)
+
+        /* Do NOT make an extension method with this signature. It causes massive ambiguity with tasks. */
+        // public static async Task<Result<T>> OnFailure<T>(this Task<Result<T>> asyncResult, Action<T> onFailure)
+        
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
+        // public static async Task<Result<T>> OnFailure<T>(this Task<Result<T>> asyncResult, Action<Result> onFailure)
+        
+        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
+        // public static async Task<Result<T>> OnFailure<T>(this Task<Result<T>> asyncResult, Action<Result<T>> onFailure)
 
         public static async Task<Result> OnFailure(this Task<Result> resultTask, Func<Result, Task> onFailureAsync)
         {
             Result result = await resultTask;
             if (result.Failed())
                 await onFailureAsync(result);
-            return result;
-        }
-
-        public static async Task<Result<T>> OnFailure<T>(this Task<Result<T>> asyncResult, Action<Result<T>> onFailure)
-        {
-            Result<T> result = await asyncResult;
-            if (result.Failed())
-                onFailure(result);
             return result;
         }
 
