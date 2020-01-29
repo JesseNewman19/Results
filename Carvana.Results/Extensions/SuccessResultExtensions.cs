@@ -20,24 +20,30 @@ namespace Carvana
                 onSuccess(result.Content);
             return result;
         }
-        
-        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
-        // public static async Task<Result> OnSuccess(this Task<Result> asyncResult, Action onSuccess)
-        
-        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
-        // public static async Task<Result> OnSuccess(this Task<Result> asyncResult, Action<Result> onSuccess)
 
-        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */ 
-        // public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action onSuccess)
+        public static async Task<Result> OnSuccessSync(this Task<Result> asyncResult, Action onSuccess)
+        {
+            Result result = await asyncResult;
+            if (result.Succeeded())
+                onSuccess();
+            return result;
+        }
 
-        /* Do NOT make an extension method with this signature. It causes massive ambiguity with tasks. */
-        // public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action<T> onSuccess)
-        
-        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
-        // public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action<Result> onSuccess)
-        
-        /* Do NOT make an extension method with this signature. It causes ambiguity with tasks. */
-        // public static async Task<Result<T>> OnSuccess<T>(this Task<Result<T>> asyncResult, Action<Result<T>> onSuccess)
+        public static async Task<Result<T>> OnSuccessSync<T>(this Task<Result<T>> asyncResult, Action onSuccess)
+        {
+            Result<T> result = await asyncResult;
+            if (result.Succeeded())
+                onSuccess();
+            return result;
+        }
+
+        public static async Task<Result<T>> OnSuccessSync<T>(this Task<Result<T>> asyncResult, Action<T> onSuccess)
+        {
+            Result<T> result = await asyncResult;
+            if (result.Succeeded())
+                onSuccess(result.Content);
+            return result;
+        }
 
         public static async Task<Result<T>> OnSuccess<T>(this Result<T> result, Func<Task> onSuccessAsync)
         {
