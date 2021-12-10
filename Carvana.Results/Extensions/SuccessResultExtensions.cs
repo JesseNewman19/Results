@@ -7,6 +7,9 @@ namespace Carvana
     [DebuggerNonUserCode]
     public static class SuccessResultExtensions
     {
+        private const string NestedResultWarning = "You are nesting Result objects. This is not the correct overload. Use .OnSuccess() instead.";
+        private const string NestedResultErrorPrefix = "Developer error. You are nesting result objects. ";
+
         public static Result OnSuccess(this Result result, Action onSuccess)
         {
             if (result.Succeeded())
@@ -43,6 +46,14 @@ namespace Carvana
             if (result.Succeeded())
                 onSuccess(result.Content);
             return result;
+        }
+
+        [Obsolete(NestedResultWarning)]
+        public static Task<Result<T>> OnSuccessSync<T>(this Task<Result<T>> asyncResult, Action<Result> onSuccess)
+        {
+            throw new ArgumentException(NestedResultErrorPrefix +
+                "It appears that you are trying to execute a method that returns 'Result', but this extension is only valid for methods returning 'T'. " +
+                "You should use '.OnSuccess()' or '.OnSuccessSync()' here instead.");
         }
 
         public static async Task<Result<T>> OnSuccess<T>(this Result<T> result, Func<Task> onSuccessAsync)
@@ -185,12 +196,28 @@ namespace Carvana
                 : Result<TOutput>.Errored(input.Status, input.ErrorMessage);
         }
 
+        [Obsolete(NestedResultWarning)]
+        public static Task<Result<Result>> Then<TInput>(this Task<Result<TInput>> asyncInput, Func<TInput, Result> getOutput)
+        {
+            throw new ArgumentException(NestedResultErrorPrefix +
+                "It appears that you are trying to execute a method that returns 'Result', but this extension is only valid for methods returning 'Result<T>'. " +
+                "You should use '.OnSuccess()' or '.OnSuccessSync()' here instead.");
+        }
+
         public static async Task<Result<TOutput>> Then<TInput, TOutput>(this Task<Result<TInput>> asyncInput, Func<TInput, Task<TOutput>> getOutputAsync)
         {
             Result<TInput> input = await asyncInput;
             return input.Succeeded()
                 ? Result.Success(await getOutputAsync(input.Content))
                 : Result<TOutput>.Errored(input.Status, input.ErrorMessage);
+        }
+
+        [Obsolete(NestedResultWarning)]
+        public static Task<Result<Result>> Then<TInput>(this Task<Result<TInput>> asyncInput, Func<TInput, Task<Result>> getOutputAsync)
+        {
+            throw new ArgumentException(NestedResultErrorPrefix +
+                "It appears that you are trying to execute a method that returns 'Task<Result>', but this extension is only valid for methods returning 'Task<Result<T>>'. " +
+                "You should use '.OnSuccess()' or '.OnSuccessSync()' here instead.");
         }
 
         public static async Task<Result<TOutput>> Then<TInput, TOutput>(this Task<Result<TInput>> asyncInput,
